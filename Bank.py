@@ -15,8 +15,9 @@ class Transaction:
 
 
 class Account:
-    def __init__(self, name):
+    def __init__(self, name,bank_id):
         self.account_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")
+        self.bank_id = bank_id
         self.name = name
         self.password = str(random.randint(1000, 9999))
         self.balance = 0
@@ -25,7 +26,7 @@ class Account:
     def deposit(self, amount, currency, exchange_rate):
         converted_amount = amount * exchange_rate
         self.balance += converted_amount
-        txn_id = f"TXN{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        txn_id = f"TXN{self.bank_id}{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
         txn = Transaction(txn_id, self.account_id, "Deposit", converted_amount, currency=currency)
         self.transactions.append(txn)
         return f"Deposited {converted_amount} INR to {self.account_id} successfully!"
@@ -33,7 +34,7 @@ class Account:
     def withdraw(self, amount):
         if self.balance >= amount:
             self.balance -= amount
-            txn_id = f"TXN{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            txn_id = f"TXN{self.bank_id}{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
             txn = Transaction(txn_id, self.account_id, "Withdraw", amount)
             self.transactions.append(txn)
             return f"Withdrawn {amount} INR from {self.account_id} successfully!"
@@ -57,9 +58,10 @@ class Bank:
         self.other_bank_charges = {"RTGS": 2, "IMPS": 6}
         self.accepted_currencies = {"INR": 1}
         self.accounts = {}
+        print(f"\nWelcome to {self.name} Bank!")
 
     def create_account(self, name):
-        account = Account(name)
+        account = Account(name,self.bank_id)
         self.accounts[account.account_id] = account
         return f"Account created! ID: {account.account_id}, Password: {account.password}"
 
@@ -108,6 +110,25 @@ class Bank:
                         self.accounts[account_id].balance -= txn.amount
                     elif txn.txn_type == "Withdraw":
                         self.accounts[account_id].balance += txn.amount
+                    elif txn.txn_type == "Transfer Out":
+                        receiver_id = txn.details["receiver_id"]
+                        amount = txn.amount
+                        self.accounts[account_id].balance += amount
+                        self.accounts[receiver_id].balance -= amount
+                        for txn_receiver in self.accounts[receiver_id].transactions:
+                            if txn_receiver.txn_type == "Transfer In" and txn_receiver.amount == amount:
+                                self.accounts[receiver_id].transactions.remove(txn_receiver)
+                                break
+                    elif txn.txn_type == "Transfer In":
+                        sender_id = txn.details["sender_id"]
+                        amount = txn.amount
+                        self.accounts[account_id].balance -= amount
+                        self.accounts[sender_id].balance += amount
+                        for txn_sender in self.accounts[sender_id].transactions:
+                            if txn_sender.txn_type == "Transfer Out" and txn_sender.amount == amount:
+                                self.accounts[sender_id].transactions.remove(txn_sender)
+                                break
+
                     self.accounts[account_id].transactions.remove(txn)
                     return f"Transaction {txn_id} reverted successfully!"
             return "Transaction not found."
@@ -117,7 +138,7 @@ class Bank:
     def deposit(self, account_id, amount, currency):
         if account_id in self.accounts and currency in self.accepted_currencies:
             return self.accounts[account_id].deposit(amount, currency, self.accepted_currencies[currency])
-        return "Invalid account or currency."
+        print( "Invalid account or currency.")
 
     def withdraw(self, account_id, amount):
         if account_id in self.accounts:
@@ -135,10 +156,10 @@ class Bank:
             if self.accounts[sender_id].balance >= total_deduction:
                 self.accounts[sender_id].balance -= total_deduction
                 self.accounts[receiver_id].balance += amount
-                txn_id_sender = f"TXN{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                txn_id_receiver = f"TXN{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                self.accounts[sender_id].transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount))
-                self.accounts[receiver_id].transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount))
+                txn_id_sender = f"TXN{self.bank_id}{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                txn_id_receiver = f"TXN{self.bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                self.accounts[sender_id].transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
+                self.accounts[receiver_id].transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
                 return f"{amount} INR transferred from {sender_id} to {receiver_id} (charges: {charge}%)"
             return "Insufficient balance!"
         return "Invalid account details."
@@ -165,8 +186,9 @@ def main():
 
         choice = input("Enter your choice:")
         if choice == "1":
-            password = input("Enter your staff password:")
-            if password == "a":
+            username = input("Enter your username:")
+            password = input("Enter your password:")
+            if username=="admin" and password == "admin123":
                 while True:
                     print("\nBank Staff Menu:")
                     print("1. Create Account")
@@ -227,6 +249,8 @@ def main():
 
                     elif option == "11":
                         break
+            else:
+                print("Invalid username or password")
         elif choice == "2":
             account_id = input("Enter Account ID:")
             password = input("Enter Password:")
