@@ -3,258 +3,285 @@ import random
 
 class Transaction:
     def __init__(self, txn_id, account_id, txn_type, amount, **kwargs):
-        self.txn_id = txn_id
-        self.account_id = account_id
-        self.txn_type = txn_type
-        self.amount = amount
-        self.details = kwargs
-        self.timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        self._txn_id = txn_id  
+        self._account_id = account_id  
+        self._txn_type = txn_type  
+        self._amount = amount  
+        self._details = kwargs  
+        self._timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S") 
 
     def __str__(self):
-        return f"Transaction[ID: {self.txn_id}, Type: {self.txn_type}, Amount: {self.amount}, Details: {self.details}, Timestamp: {self.timestamp}]"
+        return f"Transaction[ID: {self._txn_id}, Type: {self._txn_type}, Amount: {self._amount}, Details: {self._details}, Timestamp: {self._timestamp}]"
+
+    def get_txn_id(self):
+        return self._txn_id
+
+    def get_account_id(self):
+        return self._account_id
+
+    def get_txn_type(self):
+        return self._txn_type
+
+    def get_amount(self):
+        return self._amount
+
+    def get_details(self):
+        return self._details
+
+    def get_timestamp(self):
+        return self._timestamp
 
 
 class Account:
-    def __init__(self, name,bank_id):
-        self.account_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")
-        self.bank_id = bank_id
-        self.name = name
-        self.password = str(random.randint(1000, 9999))
-        self.balance = 0
-        self.transactions = []
+    def __init__(self, name, bank_id):
+        self._account_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")  
+        self._bank_id = bank_id  
+        self._name = name 
+        self._password = str(random.randint(1000, 9999))  
+        self._balance = 0  
+        self._transactions = []  
+
+    # Getter methods 
+    def get_account_id(self):
+        return self._account_id
+
+    def get_name(self):
+        return self._name
+
+    def get_balance(self):
+        return self._balance
+
+    def get_transactions(self):
+        return self._transactions
+
+    def verify_password(self, password):
+        return self._password == password
 
     def deposit(self, amount, currency, exchange_rate):
         converted_amount = amount * exchange_rate
-        self.balance += converted_amount
-        txn_id = f"TXN{self.bank_id}{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-        txn = Transaction(txn_id, self.account_id, "Deposit", converted_amount, currency=currency)
-        self.transactions.append(txn)
-        return f"Deposited {converted_amount} INR to {self.account_id} successfully!"
+        self._balance += converted_amount
+        txn_id = f"TXN{self._bank_id}{self._account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+        txn = Transaction(txn_id, self._account_id, "Deposit", converted_amount, currency=currency)
+        self._transactions.append(txn)
+        return f"Deposited {converted_amount} INR to {self._account_id} successfully!"
 
     def withdraw(self, amount):
-        if self.balance >= amount:
-            self.balance -= amount
-            txn_id = f"TXN{self.bank_id}{self.account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-            txn = Transaction(txn_id, self.account_id, "Withdraw", amount)
-            self.transactions.append(txn)
-            return f"Withdrawn {amount} INR from {self.account_id} successfully!"
+        if self._balance >= amount:
+            self._balance -= amount
+            txn_id = f"TXN{self._bank_id}{self._account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            txn = Transaction(txn_id, self._account_id, "Withdraw", amount)
+            self._transactions.append(txn)
+            return f"Withdrawn {amount} INR from {self._account_id} successfully!"
         return "Insufficient balance!"
 
     def get_transaction_history(self):
-        return "\n".join(str(txn) for txn in self.transactions) if self.transactions else "No transactions found."
+        return "\n".join(str(txn) for txn in self._transactions) if self._transactions else "No transactions found."
 
     def __str__(self):
-        return f"Account[ID: {self.account_id}, Name: {self.name}, Balance: {self.balance}]"
+        return f"Account[ID: {self._account_id}, Name: {self._name}, Balance: {self._balance}]"
 
 
 class Bank:
     def __init__(self, name):
-        self.name = name
-        self.bank_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")
-        # self.rtgs_charges = {"same_bank": 0, "other_bank": 2}
-        # self.imps_charges = {"same_bank": 5, "other_bank": 6}
+        self._name = name  
+        self._bank_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")  
+        self._same_bank_charges = {"RTGS": 0, "IMPS": 5}  
+        self._other_bank_charges = {"RTGS": 2, "IMPS": 6}  
+        self._accepted_currencies = {"INR": 1}  
+        self._accounts = {}  
+        print(f"\nWelcome to {self._name} Bank!")
 
-        self.same_bank_charges = {"RTGS": 0, "IMPS": 5}
-        self.other_bank_charges = {"RTGS": 2, "IMPS": 6}
-        self.accepted_currencies = {"INR": 1}
-        self.accounts = {}
-        print(f"\nWelcome to {self.name} Bank!")
+    # Getter methods
+    def get_bank_id(self):
+        return self._bank_id
+
+    def get_accepted_currencies(self):
+        return self._accepted_currencies
+
+    def get_accounts(self):
+        return self._accounts
 
     def create_account(self, name):
-        account = Account(name,self.bank_id)
-        self.accounts[account.account_id] = account
-        return f"Account created! ID: {account.account_id}, Password: {account.password}"
+        account = Account(name, self._bank_id)
+        self._accounts[account.get_account_id()] = account
+        return f"Account created! ID: {account.get_account_id()}, Password: {account._password}"
 
     def update_account(self, account_id, new_name):
-        if account_id in self.accounts:
-            old_name=self.accounts[account_id].name
-            self.accounts[account_id].name = new_name
-            return f"Account {account_id} updated  form {old_name} to {new_name} successfully!"
+        if account_id in self._accounts:
+            old_name = self._accounts[account_id].get_name()
+            self._accounts[account_id]._name = new_name
+            return f"Account {account_id} updated from {old_name} to {new_name} successfully!"
         return "Account not found."
 
     def delete_account(self, account_id):
-        if account_id in self.accounts:
-            del self.accounts[account_id]
+        if account_id in self._accounts:
+            del self._accounts[account_id]
             return "Account deleted successfully!"
         return "Account not found."
 
     def add_currency(self, currency, exchange_rate):
-        self.accepted_currencies[currency] = exchange_rate
+        self._accepted_currencies[currency] = exchange_rate
         return f"{currency} added with exchange rate {exchange_rate}"
-    
+
     def display_currency_details(self):
-        if not self.accepted_currencies:
+        if not self._accepted_currencies:
             print("\nNo currencies available.")
             return
         print("\nAll Currency Details:")
-        for currency, exchange_rate in self.accepted_currencies.items():
+        for currency, exchange_rate in self._accepted_currencies.items():
             print(f"{currency}: {exchange_rate}")
-    
-    def set_same_bank_charges(self, rtgs_charge, imps_charge):
-        self.same_bank_charges={"RTGS":rtgs_charge, "IMPS":imps_charge}
-        return f"Same Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
-    
-    def set_other_bank_charges(self, rtgs_charge, imps_charge):
-        self.other_bank_charges={"RTGS":rtgs_charge, "IMPS":imps_charge}
-        return f"Other Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
-    
+
+    # Polymorphism
+    def set_charges(self, rtgs_charge, imps_charge, same_bank=True):
+        if same_bank:
+            self._same_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+            return f"Same Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
+        else:
+            self._other_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+            return f"Other Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
+
     def see_service_charges(self):
-        print(f"Same Bank Charges: RTGS: {self.same_bank_charges['RTGS']}%, IMPS: {self.same_bank_charges['IMPS']}%")
-        print(f"Other Bank Charges: RTGS: {self.other_bank_charges['RTGS']}%, IMPS: {self.other_bank_charges['IMPS']}%")
+        print(f"Same Bank Charges: RTGS: {self._same_bank_charges['RTGS']}%, IMPS: {self._same_bank_charges['IMPS']}%")
+        print(f"Other Bank Charges: RTGS: {self._other_bank_charges['RTGS']}%, IMPS: {self._other_bank_charges['IMPS']}%")
 
     def revert_transaction(self, account_id, txn_id):
-        if account_id in self.accounts:
-            for txn in self.accounts[account_id].transactions:
-                if txn.txn_id == txn_id:
-                    if txn.txn_type == "Deposit":
-                        self.accounts[account_id].balance -= txn.amount
-                    elif txn.txn_type == "Withdraw":
-                        self.accounts[account_id].balance += txn.amount
-                    elif txn.txn_type == "Transfer Out":
-                        receiver_id = txn.details["receiver_id"]
-                        amount = txn.amount
-                        self.accounts[account_id].balance += amount
-                        self.accounts[receiver_id].balance -= amount
-                        for txn_receiver in self.accounts[receiver_id].transactions:
-                            if txn_receiver.txn_type == "Transfer In" and txn_receiver.amount == amount:
-                                self.accounts[receiver_id].transactions.remove(txn_receiver)
+        if account_id in self._accounts:
+            for txn in self._accounts[account_id].get_transactions():
+                if txn.get_txn_id() == txn_id:
+                    if txn.get_txn_type() == "Deposit":
+                        self._accounts[account_id]._balance -= txn.get_amount()
+                    elif txn.get_txn_type() == "Withdraw":
+                        self._accounts[account_id]._balance += txn.get_amount()
+                    elif txn.get_txn_type() == "Transfer Out":
+                        receiver_id = txn.get_details()["receiver_id"]
+                        amount = txn.get_amount()
+                        self._accounts[account_id]._balance += amount
+                        self._accounts[receiver_id]._balance -= amount
+                        for txn_receiver in self._accounts[receiver_id].get_transactions():
+                            if txn_receiver.get_txn_type() == "Transfer In" and txn_receiver.get_amount() == amount:
+                                self._accounts[receiver_id]._transactions.remove(txn_receiver)
                                 break
-                    elif txn.txn_type == "Transfer In":
-                        sender_id = txn.details["sender_id"]
-                        amount = txn.amount
-                        self.accounts[account_id].balance -= amount
-                        self.accounts[sender_id].balance += amount
-                        for txn_sender in self.accounts[sender_id].transactions:
-                            if txn_sender.txn_type == "Transfer Out" and txn_sender.amount == amount:
-                                self.accounts[sender_id].transactions.remove(txn_sender)
+                    elif txn.get_txn_type() == "Transfer In":
+                        sender_id = txn.get_details()["sender_id"]
+                        amount = txn.get_amount()
+                        self._accounts[account_id]._balance -= amount
+                        self._accounts[sender_id]._balance += amount
+                        for txn_sender in self._accounts[sender_id].get_transactions():
+                            if txn_sender.get_txn_type() == "Transfer Out" and txn_sender.get_amount() == amount:
+                                self._accounts[sender_id]._transactions.remove(txn_sender)
                                 break
 
-                    self.accounts[account_id].transactions.remove(txn)
+                    self._accounts[account_id]._transactions.remove(txn)
                     return f"Transaction {txn_id} reverted successfully!"
             return "Transaction not found."
         return "Account not found."
 
-
     def deposit(self, account_id, amount, currency):
-        if account_id in self.accounts and currency in self.accepted_currencies:
-            return self.accounts[account_id].deposit(amount, currency, self.accepted_currencies[currency])
-        print( "Invalid account or currency.")
+        if account_id in self._accounts and currency in self._accepted_currencies:
+            return self._accounts[account_id].deposit(amount, currency, self._accepted_currencies[currency])
+        return "Invalid account or currency."
 
     def withdraw(self, account_id, amount):
-        if account_id in self.accounts:
-            return self.accounts[account_id].withdraw(amount)
+        if account_id in self._accounts:
+            return self._accounts[account_id].withdraw(amount)
         return "Account not found."
 
     def transfer(self, sender_id, receiver_id, amount, same_bank=True):
-        if sender_id in self.accounts and receiver_id in self.accounts:
-            # charge = self.rtgs_charges["same_bank"] if same_bank else self.rtgs_charges["other_bank"]
-            charge = self.same_bank_charges["RTGS"] if same_bank else self.other_bank_charges["RTGS"]
-
-
+        if sender_id in self._accounts and receiver_id in self._accounts:
+            charge = self._same_bank_charges["RTGS"] if same_bank else self._other_bank_charges["RTGS"]
             total_deduction = amount + (amount * charge / 100)
 
-            if self.accounts[sender_id].balance >= total_deduction:
-                self.accounts[sender_id].balance -= total_deduction
-                self.accounts[receiver_id].balance += amount
-                txn_id_sender = f"TXN{self.bank_id}{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                txn_id_receiver = f"TXN{self.bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                self.accounts[sender_id].transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
-                self.accounts[receiver_id].transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
+            if self._accounts[sender_id].get_balance() >= total_deduction:
+                self._accounts[sender_id]._balance -= total_deduction
+                self._accounts[receiver_id]._balance += amount
+                txn_id_sender = f"TXN{self._bank_id}{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                txn_id_receiver = f"TXN{self._bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+                self._accounts[sender_id]._transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
+                self._accounts[receiver_id]._transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
                 return f"{amount} INR transferred from {sender_id} to {receiver_id} (charges: {charge}%)"
             return "Insufficient balance!"
         return "Invalid account details."
 
     def get_account_balance(self, account_id):
-        if account_id in self.accounts:
-            return f"Balance: {self.accounts[account_id].balance} INR"
+        if account_id in self._accounts:
+            return f"Balance: {self._accounts[account_id].get_balance()} INR"
         return "Account not found."
 
     def view_all_transactions(self):
         transactions = []
-        for account in self.accounts.values():
-            transactions.extend(account.transactions)
+        for account in self._accounts.values():
+            transactions.extend(account.get_transactions())
         return "\n".join(str(txn) for txn in transactions) if transactions else "No transactions found."
 
 
 def main():
     bank = Bank("SBI")
-    
+
     while True:
         print("\n1. Login as Bank Staff")
         print("2. Login as Account Holder")
         print("3. Exit")
 
-        choice = input("Enter your choice:")
+        choice = input("Enter your choice: ")
         if choice == "1":
-            username = input("Enter your username:")
-            password = input("Enter your password:")
-            if username=="admin" and password == "admin123":
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            if username == "admin" and password == "admin123":
                 while True:
                     print("\nBank Staff Menu:")
                     print("1. Create Account")
                     print("2. Update Account")
                     print("3. Delete Account")
                     print("4. Add Currency")
-                    print("5. Add Service Charges For Same Bank")
-                    print("6. Add Service Charges For Other Bank")
+                    print("5. Set Same Bank Charges")
+                    print("6. Set Other Bank Charges")
                     print("7. View All Transactions")
                     print("8. Revert Transaction")
-
                     print("9. See All Currency Details")
                     print("10. See Transaction Charges")
                     print("11. Logout")
 
                     option = input("Enter option: ")
                     if option == "1":
-                        name = input("Enter Account Holder Name:")
+                        name = input("Enter Account Holder Name: ")
                         print(bank.create_account(name))
-
                     elif option == "2":
-                        account_id = input("Enter Account ID:")
-                        new_name = input("Enter New Name:")
+                        account_id = input("Enter Account ID: ")
+                        new_name = input("Enter New Name: ")
                         print(bank.update_account(account_id, new_name))
-
                     elif option == "3":
-                        account_id = input("Enter Account ID:")
+                        account_id = input("Enter Account ID: ")
                         print(bank.delete_account(account_id))
-
                     elif option == "4":
-                        currency = input("Enter Currency:")
-                        exchange_rate = float(input("Enter Exchange Rate:"))
+                        currency = input("Enter Currency: ")
+                        exchange_rate = float(input("Enter Exchange Rate: "))
                         print(bank.add_currency(currency, exchange_rate))
-
                     elif option == "5":
                         rtgs_charge = float(input("Enter RTGS charge for same bank: "))
                         imps_charge = float(input("Enter IMPS charge for same bank: "))
-                        print(bank.set_same_bank_charges(rtgs_charge, imps_charge))
-
+                        print(bank.set_charges(rtgs_charge, imps_charge, same_bank=True))
                     elif option == "6":
                         rtgs_charge = float(input("Enter RTGS charge for other bank: "))
                         imps_charge = float(input("Enter IMPS charge for other bank: "))
-                        print(bank.set_other_bank_charges(rtgs_charge, imps_charge))
-
+                        print(bank.set_charges(rtgs_charge, imps_charge, same_bank=False))
                     elif option == "7":
                         print(bank.view_all_transactions())
-                    
                     elif option == "8":
                         account_id = input("Enter Account ID: ")
                         txn_id = input("Enter Transaction ID: ")
                         print(bank.revert_transaction(account_id, txn_id))
-
                     elif option == "9":
                         bank.display_currency_details()
-
                     elif option == "10":
                         bank.see_service_charges()
-
                     elif option == "11":
                         break
             else:
                 print("Invalid username or password")
         elif choice == "2":
-            account_id = input("Enter Account ID:")
-            password = input("Enter Password:")
-            if account_id in bank.accounts and bank.accounts[account_id].password == password:
+            account_id = input("Enter Account ID: ")
+            password = input("Enter Password: ")
+            if account_id in bank.get_accounts() and bank.get_accounts()[account_id].verify_password(password):
                 while True:
                     print("\n1. Deposit")
                     print("2. Withdraw")
@@ -264,7 +291,6 @@ def main():
                     print("6. Logout")
 
                     option = input("Enter option: ")
-
                     if option == "1":
                         amount = float(input("Enter amount: "))
                         currency = input("Enter currency (INR by default): ")
@@ -280,13 +306,14 @@ def main():
                     elif option == "4":
                         print(bank.get_account_balance(account_id))
                     elif option == "5":
-                        print(bank.accounts[account_id].get_transaction_history())
+                        print(bank.get_accounts()[account_id].get_transaction_history())
                     elif option == "6":
                         break
-
+            else:
+                print("Invalid account ID or password")
         elif choice == "3":
             break
 
+
 if __name__ == "__main__":
     main()
-
