@@ -1,5 +1,6 @@
 import datetime
 import random
+import json
 
 class Transaction:
     def __init__(self, txn_id, account_id, txn_type, amount, **kwargs):
@@ -12,6 +13,16 @@ class Transaction:
 
     def __str__(self):
         return f"Transaction[ID: {self._txn_id}, Type: {self._txn_type}, Amount: {self._amount}, Details: {self._details}, Timestamp: {self._timestamp}]"
+
+    def to_dict(self):
+        return {
+            "txn_id": self._txn_id,
+            "account_id": self._account_id,
+            "txn_type": self._txn_type,
+            "amount": self._amount,
+            "details": self._details,
+            "timestamp": self._timestamp
+        }
 
     def get_txn_id(self):
         return self._txn_id
@@ -40,6 +51,16 @@ class Account:
         self._password = str(random.randint(1000, 9999))  
         self._balance = 0  
         self._transactions = []  
+
+    def to_dict(self):
+        return {
+            "account_id": self._account_id,
+            "bank_id": self._bank_id,
+            "name": self._name,
+            "password": self._password,
+            "balance": self._balance,
+            "transactions": [txn.to_dict() for txn in self._transactions]
+        }
 
     # Getter methods 
     def get_account_id(self):
@@ -91,6 +112,20 @@ class Bank:
         self._accounts = {}  
         print(f"\nWelcome to {self._name} Bank!")
 
+    def to_dict(self):
+        return {
+            "name": self._name,
+            "bank_id": self._bank_id,
+            "same_bank_charges": self._same_bank_charges,
+            "other_bank_charges": self._other_bank_charges,
+            "accepted_currencies": self._accepted_currencies,
+            "accounts": {acc_id: acc.to_dict() for acc_id, acc in self._accounts.items()}
+        }
+
+    def save_to_json(self):
+        with open("bank_data.json", "w") as file:
+            json.dump(self.to_dict(), file, indent=4)
+
     # Getter methods
     def get_bank_id(self):
         return self._bank_id
@@ -104,23 +139,27 @@ class Bank:
     def create_account(self, name):
         account = Account(name, self._bank_id)
         self._accounts[account.get_account_id()] = account
+        self.save_to_json()
         return f"Account created! ID: {account.get_account_id()}, Password: {account._password}"
 
     def update_account(self, account_id, new_name):
         if account_id in self._accounts:
             old_name = self._accounts[account_id].get_name()
             self._accounts[account_id]._name = new_name
+            self.save_to_json()
             return f"Account {account_id} updated from {old_name} to {new_name} successfully!"
         return "Account not found."
 
     def delete_account(self, account_id):
         if account_id in self._accounts:
             del self._accounts[account_id]
+            self.save_to_json()
             return "Account deleted successfully!"
         return "Account not found."
 
     def add_currency(self, currency, exchange_rate):
         self._accepted_currencies[currency] = exchange_rate
+        self.save_to_json()
         return f"{currency} added with exchange rate {exchange_rate}"
 
     def display_currency_details(self):
@@ -135,9 +174,11 @@ class Bank:
     def set_charges(self, rtgs_charge, imps_charge, same_bank=True):
         if same_bank:
             self._same_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+            self.save_to_json()
             return f"Same Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
         else:
             self._other_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+            self.save_to_json()
             return f"Other Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
 
     def see_service_charges(self):
@@ -172,18 +213,23 @@ class Bank:
                                 break
 
                     self._accounts[account_id]._transactions.remove(txn)
+                    self.save_to_json()
                     return f"Transaction {txn_id} reverted successfully!"
             return "Transaction not found."
         return "Account not found."
 
     def deposit(self, account_id, amount, currency):
         if account_id in self._accounts and currency in self._accepted_currencies:
-            return self._accounts[account_id].deposit(amount, currency, self._accepted_currencies[currency])
+            result = self._accounts[account_id].deposit(amount, currency, self._accepted_currencies[currency])
+            self.save_to_json()
+            return result
         return "Invalid account or currency."
 
     def withdraw(self, account_id, amount):
         if account_id in self._accounts:
-            return self._accounts[account_id].withdraw(amount)
+            result = self._accounts[account_id].withdraw(amount)
+            self.save_to_json()
+            return result
         return "Account not found."
 
     def transfer(self, sender_id, receiver_id, amount, same_bank=True):
@@ -198,6 +244,7 @@ class Bank:
                 txn_id_receiver = f"TXN{self._bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
                 self._accounts[sender_id]._transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
                 self._accounts[receiver_id]._transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
+                self.save_to_json()
                 return f"{amount} INR transferred from {sender_id} to {receiver_id} (charges: {charge}%)"
             return "Insufficient balance!"
         return "Invalid account details."
