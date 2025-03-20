@@ -1,6 +1,7 @@
 import datetime
 import random
 import json
+import os
 
 class Transaction:
     def __init__(self, txn_id, account_id, txn_type, amount, **kwargs):
@@ -116,6 +117,7 @@ class Bank:
         self._other_bank_charges = {"RTGS": 2, "IMPS": 6}  
         self._accepted_currencies = {"INR": 1}  
         self._accounts = {}  
+        self.load_from_json()
         print(f"\nWelcome to {self._name} Bank!")
 
     def to_dict(self):
@@ -132,7 +134,22 @@ class Bank:
         with open("bank_data.json", "w") as file:
             json.dump(self.to_dict(), file, indent=4)
 
-    # Getter methods
+    def load_from_json(self):
+        if os.path.exists("bank_data.json"):
+            with open("bank_data.json", "r") as file:
+                data = json.load(file)
+                self._same_bank_charges = data.get("same_bank_charges", {"RTGS": 0, "IMPS": 5})
+                self._other_bank_charges = data.get("other_bank_charges", {"RTGS": 2, "IMPS": 6})
+                self._accepted_currencies = data.get("accepted_currencies", {"INR": 1})
+                self._accounts = {}
+                for acc_id, acc_data in data.get("accounts", {}).items():
+                    account = Account(acc_data["name"], acc_data["bank_id"])
+                    account._account_id = acc_data["account_id"]
+                    account._password = acc_data["password"]
+                    account._balance = acc_data["balance"]
+                    account._transactions = [Transaction(txn["txn_id"], txn["account_id"], txn["txn_type"], txn["amount"], **txn["details"]) for txn in acc_data["transactions"]]
+                    self._accounts[acc_id] = account
+
     def get_bank_id(self):
         return self._bank_id
 
