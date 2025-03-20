@@ -48,7 +48,9 @@ class Account:
         self._account_id = name[:3].upper() + datetime.datetime.now().strftime("%Y%m%d")  
         self._bank_id = bank_id  
         self._name = name 
-        self._password = str(random.randint(1000, 9999))  
+        # self._password = str(random.randint(1000, 9999))  
+        self._password = name.capitalize() + random.choice(["@", "#", "$"]) + str(random.randint(1000, 9999))
+
         self._balance = 0  
         self._transactions = []  
 
@@ -355,7 +357,7 @@ def main():
             else:
                 print("Invalid username or password")
         elif choice == "2":
-            account_id = input("Enter Account ID: ")
+            account_id = input("Enter Your Username: ")
             password = input("Enter Password: ")
             if account_id in bank.get_accounts() and bank.get_accounts()[account_id].verify_password(password):
                 while True:
