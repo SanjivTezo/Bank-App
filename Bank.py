@@ -79,6 +79,8 @@ class Account:
         return self._password == password
 
     def deposit(self, amount, currency, exchange_rate):
+        if amount <= 0:
+            return "Amount must be greater than zero."
         converted_amount = amount * exchange_rate
         self._balance += converted_amount
         txn_id = f"TXN{self._bank_id}{self._account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -87,6 +89,8 @@ class Account:
         return f"Deposited {converted_amount} INR to {self._account_id} successfully!"
 
     def withdraw(self, amount):
+        if amount <= 0:
+            return "Amount must be greater than zero."
         if self._balance >= amount:
             self._balance -= amount
             txn_id = f"TXN{self._bank_id}{self._account_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -186,68 +190,93 @@ class Bank:
         print(f"Other Bank Charges: RTGS: {self._other_bank_charges['RTGS']}%, IMPS: {self._other_bank_charges['IMPS']}%")
 
     def revert_transaction(self, account_id, txn_id):
-        if account_id in self._accounts:
-            for txn in self._accounts[account_id].get_transactions():
-                if txn.get_txn_id() == txn_id:
-                    if txn.get_txn_type() == "Deposit":
-                        self._accounts[account_id]._balance -= txn.get_amount()
-                    elif txn.get_txn_type() == "Withdraw":
-                        self._accounts[account_id]._balance += txn.get_amount()
-                    elif txn.get_txn_type() == "Transfer Out":
-                        receiver_id = txn.get_details()["receiver_id"]
-                        amount = txn.get_amount()
-                        self._accounts[account_id]._balance += amount
+        if account_id not in self._accounts:
+            return "Account not found."
+
+        account = self._accounts[account_id]
+        for txn in account.get_transactions():
+            if txn.get_txn_id() == txn_id:
+                if txn.get_txn_type() == "Deposit":
+                    if account.get_balance() - txn.get_amount() < 0:
+                        return "Cannot revert transaction: Account balance would go negative."
+                    account._balance -= txn.get_amount()
+                elif txn.get_txn_type() == "Withdraw":
+                    account._balance += txn.get_amount()
+                elif txn.get_txn_type() == "Transfer Out":
+                    receiver_id = txn.get_details()["receiver_id"]
+                    amount = txn.get_amount()
+                    if receiver_id in self._accounts:
+                        if self._accounts[receiver_id].get_balance() - amount < 0:
+                            return "Cannot revert transaction: Receiver's balance would go negative."
+                        account._balance += amount
                         self._accounts[receiver_id]._balance -= amount
                         for txn_receiver in self._accounts[receiver_id].get_transactions():
                             if txn_receiver.get_txn_type() == "Transfer In" and txn_receiver.get_amount() == amount:
                                 self._accounts[receiver_id]._transactions.remove(txn_receiver)
                                 break
-                    elif txn.get_txn_type() == "Transfer In":
-                        sender_id = txn.get_details()["sender_id"]
-                        amount = txn.get_amount()
-                        self._accounts[account_id]._balance -= amount
+                elif txn.get_txn_type() == "Transfer In":
+                    sender_id = txn.get_details()["sender_id"]
+                    amount = txn.get_amount()
+                    if sender_id in self._accounts:
+                        if self._accounts[sender_id].get_balance() - amount < 0:
+                            return "Cannot revert transaction: Sender's balance would go negative."
+                        account._balance -= amount
                         self._accounts[sender_id]._balance += amount
                         for txn_sender in self._accounts[sender_id].get_transactions():
                             if txn_sender.get_txn_type() == "Transfer Out" and txn_sender.get_amount() == amount:
                                 self._accounts[sender_id]._transactions.remove(txn_sender)
                                 break
 
-                    self._accounts[account_id]._transactions.remove(txn)
-                    self.save_to_json()
-                    return f"Transaction {txn_id} reverted successfully!"
-            return "Transaction not found."
-        return "Account not found."
-
+                account._transactions.remove(txn)
+                self.save_to_json()
+                return f"Transaction {txn_id} reverted successfully!"
+        return "Transaction not found."
     def deposit(self, account_id, amount, currency):
-        if account_id in self._accounts and currency in self._accepted_currencies:
-            result = self._accounts[account_id].deposit(amount, currency, self._accepted_currencies[currency])
-            self.save_to_json()
-            return result
-        return "Invalid account or currency."
+        if account_id not in self._accounts:
+            return "Account not found."
+        if currency not in self._accepted_currencies:
+            return f"Currency {currency} not accepted."
+        if amount <= 0:
+            return "Amount must be greater than zero."
+        result = self._accounts[account_id].deposit(amount, currency, self._accepted_currencies[currency])
+        self.save_to_json()
+        return result
 
     def withdraw(self, account_id, amount):
-        if account_id in self._accounts:
-            result = self._accounts[account_id].withdraw(amount)
-            self.save_to_json()
-            return result
-        return "Account not found."
+        if account_id not in self._accounts:
+            return "Account not found."
+        if amount <= 0:
+            return "Amount must be greater than zero."
+        result = self._accounts[account_id].withdraw(amount)
+        self.save_to_json()
+        return result
 
     def transfer(self, sender_id, receiver_id, amount, same_bank=True):
-        if sender_id in self._accounts and receiver_id in self._accounts:
-            charge = self._same_bank_charges["RTGS"] if same_bank else self._other_bank_charges["RTGS"]
-            total_deduction = amount + (amount * charge / 100)
+        if sender_id not in self._accounts:
+            return "Sender account not found."
+        if receiver_id not in self._accounts:
+            return "Receiver account not found."
+        if amount <= 0:
+            return "Amount must be greater than zero."
 
-            if self._accounts[sender_id].get_balance() >= total_deduction:
-                self._accounts[sender_id]._balance -= total_deduction
-                self._accounts[receiver_id]._balance += amount
-                txn_id_sender = f"TXN{self._bank_id}{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                txn_id_receiver = f"TXN{self._bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-                self._accounts[sender_id]._transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
-                self._accounts[receiver_id]._transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
-                self.save_to_json()
-                return f"{amount} INR transferred from {sender_id} to {receiver_id} (charges: {charge}%)"
-            return "Insufficient balance!"
-        return "Invalid account details."
+        # Confirmation prompt
+        confirm = input(f"Are you sure you want to transfer {amount} INR from {sender_id} to {receiver_id}? (yes/no): ").lower()
+        if confirm != "yes":
+            return "Transfer cancelled."
+
+        charge = self._same_bank_charges["RTGS"] if same_bank else self._other_bank_charges["RTGS"]
+        total_deduction = amount + (amount * charge / 100)
+
+        if self._accounts[sender_id].get_balance() >= total_deduction:
+            self._accounts[sender_id]._balance -= total_deduction
+            self._accounts[receiver_id]._balance += amount
+            txn_id_sender = f"TXN{self._bank_id}{sender_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            txn_id_receiver = f"TXN{self._bank_id}{receiver_id}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
+            self._accounts[sender_id]._transactions.append(Transaction(txn_id_sender, sender_id, "Transfer Out", amount, receiver_id=receiver_id))
+            self._accounts[receiver_id]._transactions.append(Transaction(txn_id_receiver, receiver_id, "Transfer In", amount, sender_id=sender_id))
+            self.save_to_json()
+            return f"{amount} INR transferred from {sender_id} to {receiver_id} (charges: {charge}%)"
+        return "Insufficient balance!"
 
     def get_account_balance(self, account_id):
         if account_id in self._accounts:
