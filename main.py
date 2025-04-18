@@ -1,4 +1,4 @@
-from bank import Bank
+from models.bank import Bank
 import os
 import json
 from services.account_service import AccountService

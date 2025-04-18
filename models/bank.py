@@ -1,8 +1,8 @@
 import datetime
 import json
 import os
-from account import Account
-from transaction import Transaction
+from models.account import Account  
+from models.transaction import Transaction
 
 class Bank:
     def __init__(self, name, admin_user, admin_pass):

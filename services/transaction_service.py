@@ -1,6 +1,6 @@
 import datetime
-from transaction import Transaction  
-from bank import Bank  
+from models.transaction import Transaction
+from models.bank import Bank  
 import json, os
 
 class TransactionService:

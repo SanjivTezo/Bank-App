@@ -1,38 +1,97 @@
 {
+    "sbi": {
+        "name": "sbi",
+        "admin_user": "1",
+        "admin_pass": "1",
+        "bank_id": "SBI20250419",
+        "same_bank_charges": {
+            "RTGS": 0,
+            "IMPS": 5
+        },
+        "other_bank_charges": {
+            "RTGS": 2,
+            "IMPS": 6
+        },
+        "accepted_currencies": {
+            "INR": 1
+        },
+        "accounts": {
+            "SAN20250419": {
+                "account_id": "SAN20250419",
+                "bank_id": "SBI20250419",
+                "name": "sanjiv",
+                "password": "Sanjiv#6852",
+                "balance": 865.78,
+                "transactions": [
+                    {
+                        "txn_id": "TXNSBI20250419SAN2025041920250419013917",
+                        "account_id": "SAN20250419",
+                        "txn_type": "Deposit",
+                        "amount": 1000.0,
+                        "details": {
+                            "currency": "INR"
+                        },
+                        "timestamp": "2025-04-19 01:39:17"
+                    },
+                    {
+                        "txn_id": "TXNSBI20250419SAN2025041920250419013920",
+                        "account_id": "SAN20250419",
+                        "txn_type": "Withdraw",
+                        "amount": 123.0,
+                        "details": {},
+                        "timestamp": "2025-04-19 01:39:20"
+                    },
+                    {
+                        "txn_id": "TXNSBI20250419SAN2025041920250419014025",
+                        "account_id": "SAN20250419",
+                        "txn_type": "Transfer Out",
+                        "amount": 11.0,
+                        "details": {
+                            "receiver_id": "RAJ20250419"
+                        },
+                        "timestamp": "2025-04-19 01:40:25"
+                    }
+                ]
+            }
+        }
+    },
     "hdfc": {
         "name": "hdfc",
         "admin_user": "hdfc",
         "admin_pass": "hdfc",
         "bank_id": "HDF20250419",
         "same_bank_charges": {
-            "RTGS": 0,
-            "IMPS": 5
+            "RTGS": 12.0,
+            "IMPS": 12.0
         },
         "other_bank_charges": {
-            "RTGS": 2,
-            "IMPS": 6
+            "RTGS": 12.0,
+            "IMPS": 12.0
         },
         "accepted_currencies": {
-            "INR": 1
+            "INR": 1,
+            "1": 1.0
         },
-        "accounts": {}
-    },
-    "boi": {
-        "name": "boi",
-        "admin_user": "boi",
-        "admin_pass": "boi",
-        "bank_id": "BOI20250419",
-        "same_bank_charges": {
-            "RTGS": 0,
-            "IMPS": 5
-        },
-        "other_bank_charges": {
-            "RTGS": 2,
-            "IMPS": 6
-        },
-        "accepted_currencies": {
-            "INR": 1
-        },
-        "accounts": {}
+        "accounts": {
+            "RAJ20250419": {
+                "account_id": "RAJ20250419",
+                "bank_id": "HDF20250419",
+                "name": "raju",
+                "password": "Raju@1945",
+                "balance": 11.0,
+                "transactions": [
+                    {
+                        "txn_id": "TXNHDF20250419RAJ2025041920250419014025",
+                        "account_id": "RAJ20250419",
+                        "txn_type": "Transfer In",
+                        "amount": 11.0,
+                        "details": {
+                            "sender_id": "SAN20250419"
+                        },
+                        "timestamp": "2025-04-19 01:40:25"
+                    }
+                ]
+            }
+        }
     }
 }

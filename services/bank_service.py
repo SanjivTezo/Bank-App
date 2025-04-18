@@ -1,3 +1,4 @@
+from models.bank import Bank
 class BankService:
     def __init__(self, bank):
         self.bank = bank

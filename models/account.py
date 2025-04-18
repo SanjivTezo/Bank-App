@@ -1,6 +1,6 @@
 import datetime
 import random
-from transaction import Transaction
+from models.transaction import Transaction
 
 class Account:
     def __init__(self, name, bank_id):

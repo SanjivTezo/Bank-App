@@ -1,4 +1,4 @@
-from account import Account
+from models.account import Account
 
 class AccountService:
     def __init__(self, bank):
