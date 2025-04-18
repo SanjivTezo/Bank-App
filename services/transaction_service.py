@@ -112,83 +112,140 @@ class TransactionService:
         for account in self.bank.get_accounts().values():
             transactions.extend(account.get_transactions())
         return "\n".join(str(txn) for txn in transactions) if transactions else "No transactions found."
-
+        
     def revert_transaction(self, account_id, txn_id):
-        if account_id not in self.bank.get_accounts():
+        account = self.bank.get_accounts().get(account_id)
+        if not account:
             return "Account not found."
 
-        account = self.bank.get_accounts()[account_id]
-        
-        txn_to_revert = None
+        transaction_to_revert = None
         for txn in account.get_transactions():
             if txn.get_txn_id() == txn_id:
-                txn_to_revert = txn
+                transaction_to_revert = txn
                 break
-        
-        if not txn_to_revert:
+
+        if not transaction_to_revert:
             return "Transaction not found."
 
-        txn_type = txn_to_revert.get_txn_type()
-        amount = txn_to_revert.get_amount()
-        details = txn_to_revert.get_details()
+        txn_type = transaction_to_revert.get_txn_type()
+        amount = transaction_to_revert.get_amount()
+        details = transaction_to_revert.get_details()
 
-        try:
-            if txn_type == "Deposit":
-                if account.get_balance() - amount < 0:
-                    return "Error: Reverting would make account balance negative"
-                account._balance -= amount
+        if txn_type == "Deposit":
+            if account.get_balance() < amount:
+                return "Insufficient balance to revert deposit."
+            account._balance -= amount
+            account._transactions.remove(transaction_to_revert)
 
-            elif txn_type == "Withdraw":
-                account._balance += amount
+        elif txn_type == "Withdraw":
+            account._balance += amount
+            account._transactions.remove(transaction_to_revert)
 
-            elif txn_type == "Transfer Out":
-                receiver_id = details["receiver_id"]
-                if receiver_id not in self.bank.get_accounts():
-                    return "Receiver account not found"
-                
-                receiver = self.bank.get_accounts()[receiver_id]
-                
-                if account.get_balance() + amount < 0:
-                    return "Error: Reverting would make sender balance negative"
-                if receiver.get_balance() - amount < 0:
-                    return "Error: Reverting would make receiver balance negative"
-                
-                account._balance += amount
-                receiver._balance -= amount
-                
-                for txn in receiver.get_transactions():
-                    if (txn.get_txn_type() == "Transfer In" and 
-                        txn.get_details().get("sender_id") == account_id and
-                        txn.get_amount() == amount):
-                        receiver._transactions.remove(txn)
+        elif txn_type == "Transfer Out":
+            receiver_id = details["receiver_id"]
+            receiver_account = self.bank.get_accounts().get(receiver_id)
+
+            if not receiver_account:
+                with open("data/bank_data.json", "r") as f:
+                    all_banks = json.load(f)
+
+                receiver_bank_data = None
+                for bank_name, bank_info in all_banks.items():
+                    if receiver_id in bank_info["accounts"]:
+                        receiver_bank_data = bank_info
                         break
 
-            elif txn_type == "Transfer In":
-                sender_id = details["sender_id"]
-                if sender_id not in self.bank.get_accounts():
-                    return "Sender account not found"
-                
-                sender = self.bank.get_accounts()[sender_id]
-                
-                if account.get_balance() - amount < 0:
-                    return "Error: Reverting would make receiver balance negative"
-                if sender.get_balance() + amount < 0:
-                    return "Error: Reverting would make sender balance negative"
-                
-                account._balance -= amount
-                sender._balance += amount
-                
+                if not receiver_bank_data:
+                    return "Receiver's bank data not found."
 
-                for txn in sender.get_transactions():
-                    if (txn.get_txn_type() == "Transfer Out" and 
-                        txn.get_details().get("receiver_id") == account_id and
-                        txn.get_amount() == amount):
-                        sender._transactions.remove(txn)
+                receiver_bank = Bank(receiver_bank_data["name"], receiver_bank_data["admin_user"], receiver_bank_data["admin_pass"])
+                receiver_account = receiver_bank.get_accounts().get(receiver_id)
+
+                if not receiver_account:
+                    return "Receiver account not found in their bank."
+
+                if receiver_account.get_balance() < amount:
+                    return "Receiver has insufficient funds to revert transfer."
+
+                account._balance += amount
+                receiver_account._balance -= amount
+
+                for txn in receiver_account.get_transactions():
+                    if txn.get_txn_type() == "Transfer In" and txn.get_details().get("sender_id") == account_id and txn.get_amount() == amount:
+                        receiver_account._transactions.remove(txn)
                         break
 
-            account._transactions.remove(txn_to_revert)
-            self.bank.save_to_json()
-            return f"Transaction {txn_id} reverted successfully!"
+                account._transactions.remove(transaction_to_revert)
+                self.bank.save_to_json()
+                receiver_bank.save_to_json()
+                return f"Transaction {txn_id} reverted successfully!"
 
-        except Exception as e:
-            return f"Error reverting transaction: {str(e)}"
+            else:
+                if receiver_account.get_balance() < amount:
+                    return "Receiver has insufficient funds to revert transfer."
+
+                account._balance += amount
+                receiver_account._balance -= amount
+
+                for txn in receiver_account.get_transactions():
+                    if txn.get_txn_type() == "Transfer In" and txn.get_details().get("sender_id") == account_id and txn.get_amount() == amount:
+                        receiver_account._transactions.remove(txn)
+                        break
+
+                account._transactions.remove(transaction_to_revert)
+
+        elif txn_type == "Transfer In":
+            sender_id = details["sender_id"]
+            sender_account = self.bank.get_accounts().get(sender_id)
+
+            if not sender_account:
+                with open("data/bank_data.json", "r") as f:
+                    all_banks = json.load(f)
+
+                sender_bank_data = None
+                for bank_name, bank_info in all_banks.items():
+                    if sender_id in bank_info["accounts"]:
+                        sender_bank_data = bank_info
+                        break
+
+                if not sender_bank_data:
+                    return "Sender's bank data not found."
+
+                sender_bank = Bank(sender_bank_data["name"], sender_bank_data["admin_user"], sender_bank_data["admin_pass"])
+                sender_account = sender_bank.get_accounts().get(sender_id)
+
+                if not sender_account:
+                    return "Sender account not found in their bank."
+
+                if account.get_balance() < amount:
+                    return "Insufficient balance to revert transfer."
+
+                account._balance -= amount
+                sender_account._balance += amount
+
+                for txn in sender_account.get_transactions():
+                    if txn.get_txn_type() == "Transfer Out" and txn.get_details().get("receiver_id") == account_id and txn.get_amount() == amount:
+                        sender_account._transactions.remove(txn)
+                        break
+
+                account._transactions.remove(transaction_to_revert)
+                self.bank.save_to_json()
+                sender_bank.save_to_json()
+                return f"Transaction {txn_id} reverted successfully!"
+
+            else:
+                if account.get_balance() < amount:
+                    return "Insufficient balance to revert transfer."
+
+                account._balance -= amount
+                sender_account._balance += amount
+
+                for txn in sender_account.get_transactions():
+                    if txn.get_txn_type() == "Transfer Out" and txn.get_details().get("receiver_id") == account_id and txn.get_amount() == amount:
+                        sender_account._transactions.remove(txn)
+                        break
+
+                account._transactions.remove(transaction_to_revert)
+
+        self.bank.save_to_json()
+        return f"Transaction {txn_id} reverted successfully!"
