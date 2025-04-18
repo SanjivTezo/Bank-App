@@ -1,24 +1,48 @@
 from bank import Bank
+import os
+import json
 from services.account_service import AccountService
 from services.transaction_service import TransactionService
 from services.bank_service import BankService
 
 def main():
-    bank = Bank("SBI")
-    account_service = AccountService(bank)
-    transaction_service = TransactionService(bank)
-    bank_service = BankService(bank)
+    print("Welcome to the Banking System")
+    bank = None
 
     while True:
-        print("\n1. Login as Bank Staff")
-        print("2. Login as Account Holder")
-        print("3. Exit")
+        print("\n1. Create New Bank ")
+        print("2. Login as Bank Staff")
+        print("3. Login as Account Holder")
+        print("4. Exit")
 
         choice = input("Enter your choice: ")
         if choice == "1":
+            bank_name = input("Enter Bank Name: ")
             username = input("Enter your username: ")
             password = input("Enter your password: ")
-            if username == "admin" and password == "admin123":
+            bank = Bank(bank_name, username, password)
+            bank.save_to_json()
+            # account_service = AccountService(bank)
+            # transaction_service = TransactionService(bank)
+            # bank_service = BankService(bank)
+            print(f"Bank {bank_name} created successfully.")
+
+        elif choice == "2":
+            if os.path.exists("data/bank_data.json"):
+                with open("data/bank_data.json", "r") as file:
+                     all_banks = json.load(file)
+                bank_name = input("Enter Bank Name: ")
+                if bank_name not in all_banks:
+                    print("Bank Does Not Exits")
+                    continue
+                bank_data = all_banks[bank_name]
+                bank = Bank(bank_data["name"], bank_data["admin_user"], bank_data["admin_pass"])
+                account_service = AccountService(bank)
+                transaction_service = TransactionService(bank)
+                bank_service = BankService(bank)
+            username = input("Enter your username: ")
+            password = input("Enter your password: ")
+            if username == bank.get_username() and password == bank.get_password():
                 while True:
                     print("\nBank Staff Menu:")
                     print("1. Create Account")
@@ -70,7 +94,7 @@ def main():
                         break
             else:
                 print("Invalid username or password")
-        elif choice == "2":
+        elif choice == "3":
             account_id = input("Enter Your Username: ")
             password = input("Enter Password: ")
             if account_id in bank.get_accounts() and bank.get_accounts()[account_id].verify_password(password):
@@ -103,7 +127,7 @@ def main():
                         break
             else:
                 print("Invalid account ID or password")
-        elif choice == "3":
+        elif choice == "4":
             break
 
 if __name__ == "__main__":
