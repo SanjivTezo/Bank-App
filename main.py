@@ -95,6 +95,23 @@ def main():
             else:
                 print("Invalid username or password")
         elif choice == "3":
+            if os.path.exists("data/bank_data.json"):
+                with open("data/bank_data.json", "r") as file:
+                    all_banks = json.load(file)
+                bank_name = input("Enter Bank Name: ")
+                if bank_name not in all_banks:
+                    print("Bank Does Not Exist. Please create it first (option 1) or login as staff.")
+                    continue
+                # build the Bank instance and its services
+                bank_data = all_banks[bank_name]
+                bank = Bank(bank_data["name"],
+                            bank_data["admin_user"],
+                            bank_data["admin_pass"])
+                account_service = AccountService(bank)
+                transaction_service = TransactionService(bank)
+            else:
+                print("No banks available. Please create a bank first.")
+                continue
             account_id = input("Enter Your Username: ")
             password = input("Enter Password: ")
             if account_id in bank.get_accounts() and bank.get_accounts()[account_id].verify_password(password):

@@ -1,0 +1,38 @@
+{
+    "hdfc": {
+        "name": "hdfc",
+        "admin_user": "hdfc",
+        "admin_pass": "hdfc",
+        "bank_id": "HDF20250419",
+        "same_bank_charges": {
+            "RTGS": 0,
+            "IMPS": 5
+        },
+        "other_bank_charges": {
+            "RTGS": 2,
+            "IMPS": 6
+        },
+        "accepted_currencies": {
+            "INR": 1
+        },
+        "accounts": {}
+    },
+    "boi": {
+        "name": "boi",
+        "admin_user": "boi",
+        "admin_pass": "boi",
+        "bank_id": "BOI20250419",
+        "same_bank_charges": {
+            "RTGS": 0,
+            "IMPS": 5
+        },
+        "other_bank_charges": {
+            "RTGS": 2,
+            "IMPS": 6
+        },
+        "accepted_currencies": {
+            "INR": 1
+        },
+        "accounts": {}
+    }
+}
