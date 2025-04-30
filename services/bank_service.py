@@ -1,28 +1,29 @@
 from models.bank import Bank
-class BankService:
-    def __init__(self, bank):
-        self.bank = bank
+from models.account import Account
+from models.transaction import Transaction
+from utils.getters import AccountGetters, BankGetters, TransactionGetters
+from utils.json_utils import save_to_json 
 
-    def add_currency(self, currency, exchange_rate):
-        self.bank._accepted_currencies[currency] = exchange_rate
-        self.bank.save_to_json()
-        return f"{currency} added with exchange rate {exchange_rate}"
+def add_currency(bank, currency, exchange_rate):
+    bank._accepted_currencies[currency] = exchange_rate 
+    save_to_json("data/bank_data.json", bank._name, bank.to_dict()) 
+    return f"{currency} added with exchange rate {exchange_rate}"
 
-    def set_charges(self, rtgs_charge, imps_charge, same_bank=True):
-        if same_bank:
-            self.bank._same_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
-            self.bank.save_to_json()
-            return f"Same Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
-        else:
-            self.bank._other_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
-            self.bank.save_to_json()
-            return f"Other Bank Charges set to RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
+def set_charges(bank, rtgs_charge, imps_charge, same_bank=True):
+    if same_bank:
+        bank._same_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+    else:
+        bank._other_bank_charges = {"RTGS": rtgs_charge, "IMPS": imps_charge}
+    
+   
+    save_to_json("data/bank_data.json", bank._name, bank.to_dict())
+    return f"Charges updated successfully! RTGS: {rtgs_charge}%, IMPS: {imps_charge}%"
 
-    def see_service_charges(self):
-        return {
-            "same_bank": self.bank._same_bank_charges,
-            "other_bank": self.bank._other_bank_charges
-        }
+def see_service_charges(bank):
+    return {
+        "same_bank": bank._same_bank_charges,
+        "other_bank": bank._other_bank_charges
+    }
 
-    def display_currency_details(self):
-        return self.bank._accepted_currencies
+def display_currency_details(bank):
+    return bank._accepted_currencies  

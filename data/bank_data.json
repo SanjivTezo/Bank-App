@@ -1,0 +1,67 @@
+{
+    "sbi": {
+        "name": "sbi",
+        "admin_user": "sbi",
+        "admin_pass": "sbi",
+        "bank_id": "SBI20250430",
+        "same_bank_charges": {
+            "RTGS": 0.0,
+            "IMPS": 5.0
+        },
+        "other_bank_charges": {
+            "RTGS": 2.0,
+            "IMPS": 6.0
+        },
+        "accepted_currencies": {
+            "INR": 1,
+            "1": 1.0
+        },
+        "accounts": {
+            "SAN20250430174530": {
+                "account_id": "SAN20250430174530",
+                "bank_id": "SBI20250430",
+                "name": "sanjiv",
+                "password": "Sanjiv@4409",
+                "balance": 800.0,
+                "transactions": [
+                    {
+                        "txn_id": "TXNSBI20250430SAN2025043017453020250430174820",
+                        "account_id": "SAN20250430174530",
+                        "txn_type": "Deposit",
+                        "amount": 1000.0,
+                        "details": {
+                            "currency": "INR"
+                        },
+                        "timestamp": "2025-04-30 17:48:20"
+                    },
+                    {
+                        "txn_id": "TXNSBI20250430SAN2025043017453020250430174824",
+                        "account_id": "SAN20250430174530",
+                        "txn_type": "Withdraw",
+                        "amount": 200.0,
+                        "details": {},
+                        "timestamp": "2025-04-30 17:48:24"
+                    }
+                ]
+            }
+        }
+    },
+    "hdfc": {
+        "name": "hdfc",
+        "admin_user": "hdfc",
+        "admin_pass": "hdfc",
+        "bank_id": "HDF20250430",
+        "same_bank_charges": {
+            "RTGS": 0,
+            "IMPS": 5
+        },
+        "other_bank_charges": {
+            "RTGS": 2,
+            "IMPS": 6
+        },
+        "accepted_currencies": {
+            "INR": 1
+        },
+        "accounts": {}
+    }
+}

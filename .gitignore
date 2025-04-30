@@ -1,0 +1,11 @@
+# Ignore Python cache
+__pycache__/
+
+# Optional: Ignore .pyc files too
+*.pyc
+
+# Optional: VSCode settings or system-specific files
+.vscode/
+.DS_Store
+__pycache__/
+__pycache__/
