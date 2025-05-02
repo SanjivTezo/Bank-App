@@ -1,0 +1,13 @@
+def display_staff_menu():
+    print("\nBank Staff Menu:")
+    print("1. Create Account")
+    print("2. Update Account")
+    print("3. Delete Account")
+    print("4. Add Currency")
+    print("5. Set Same Bank Charges")
+    print("6. Set Other Bank Charges")
+    print("7. View All Transactions")
+    print("8. Revert Transaction")
+    print("9. See All Currency Details")
+    print("10. See Transaction Charges")
+    print("11. Logout")
