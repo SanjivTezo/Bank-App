@@ -76,17 +76,17 @@ def main():
             if error:
                 print(error)
                 continue
-            bank_getters = BankGetters(bank)
 
             account_id = input("Enter Your Username: ")
             password = input("Enter Password: ")
-            if account_id in bank_getters.get_accounts():
-                account = bank_getters.get_accounts()[account_id]
-                account_getters = AccountGetters(account)
-                if account_getters.verify_password(password):
+
+            # Check if the account exists in the bank's accounts
+            if account_id in bank._accounts:
+                account = bank._accounts[account_id]
+                if account["account_password"] == password:
+                    print(f"Welcome, {account['account_name']}!")
                     while True:
                         display_account_holder_menu()
-
                         option = input("Enter option: ")
                         if option == "1":
                             deposit_action(bank, account_id)
@@ -97,7 +97,7 @@ def main():
                         elif option == "4":
                             check_balance_action(bank, account_id)
                         elif option == "5":
-                            view_transaction_history_action(account_getters)
+                            view_transaction_history_action(bank, account_id)
                         elif option == "6":
                             break
                 else:
