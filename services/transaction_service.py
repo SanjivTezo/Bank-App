@@ -1,8 +1,6 @@
 from models.transaction import Transaction
 from models.bank import Bank
 from utils.helpers import save_bank_data, generate_transaction_id, validate_account, save_to_json, load_json_data
-import json
-import os
 import datetime
 
 def deposit(bank, account_id, amount, currency):
@@ -24,6 +22,7 @@ def deposit(bank, account_id, amount, currency):
     save_to_json("data/bank_data.json", "accounts", account)
 
     return f"Deposited {converted_amount} INR to {account_id} successfully!"
+
 
 def withdraw(bank, account_id, amount):
     account = bank._accounts.get(account_id)
@@ -64,11 +63,9 @@ def view_all_transactions(bank):
 
 def transfer(bank, sender_id, receiver_id, amount, same_bank):
     file_path = "data/bank_data.json"
+    all_data = load_json_data(file_path)
 
-    if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            all_data = json.load(file)
-
+    if all_data:
         sender_account = bank._accounts.get(sender_id)
         if not sender_account:
             return "Sender account not found."
@@ -114,7 +111,8 @@ def revert_transaction(bank, account_id, txn_id):
         if not transaction_to_revert:
             return "Transaction not found."
 
-        account = bank._accounts.get(account_id)
+        accounts = all_data.get("accounts", [])
+        account = next((acc for acc in accounts if acc["account_id"] == account_id), None)
         if not account:
             return "Account not found."
 
@@ -127,13 +125,27 @@ def revert_transaction(bank, account_id, txn_id):
             account["account_balance"] -= amount
         elif txn_type == "Withdraw":
             account["account_balance"] += amount
+        elif txn_type == "Transfer":
+            receiver_id = transaction_to_revert["details"]["receiver_id"]
+            receiver_account = next((acc for acc in accounts if acc["account_id"] == receiver_id), None)
+            if not receiver_account:
+                return "Receiver account not found."
+            account["account_balance"] += abs(amount)
+            receiver_account["account_balance"] -= abs(amount)
+        elif txn_type == "Receive":
+            sender_id = transaction_to_revert["details"]["sender_id"]
+            sender_account = next((acc for acc in accounts if acc["account_id"] == sender_id), None)
+            if not sender_account:
+                return "Sender account not found."
+            account["account_balance"] -= abs(amount)
+            sender_account["account_balance"] += abs(amount)
         else:
             return f"Cannot revert transaction of type {txn_type}."
 
         transactions.remove(transaction_to_revert)
 
         save_to_json(file_path, "transactions", transactions)
-        save_to_json(file_path, "accounts", account)
+        save_to_json(file_path, "accounts", accounts)
 
         return f"Transaction {txn_id} reverted successfully!"
     return "Data file not found."

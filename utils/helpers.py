@@ -12,13 +12,11 @@ def load_json_data(file_path):
     else:
         print("Data file not found.")
         return None
-    
+
 def load_bank(file_path, bank_name):
+    all_data = load_json_data(file_path)  
 
-    if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            all_data = json.load(file)
-
+    if all_data:
         bank_data = next((bank for bank in all_data.get("bank", []) if bank["bank_name"] == bank_name), None)
         if not bank_data:
             return None, "Bank Does Not Exist"

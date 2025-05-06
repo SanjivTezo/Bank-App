@@ -1,9 +1,8 @@
 import datetime
 import json
-import os
 from models.account import Account
 from models.transaction import Transaction
-from utils.helpers import get_accounts, save_bank_data, generate_transaction_id
+from utils.helpers import get_accounts, save_bank_data, generate_transaction_id, load_json_data
 from utils.json_utils import save_to_json
 
 
@@ -25,11 +24,10 @@ def withdraw(bank, account_id, amount):
 
     if account["account_balance"] < amount:
         return "Insufficient balance."
-   
+
     account["account_balance"] -= amount
 
     save_to_json("data/bank_data.json", "accounts", account)
-
 
     txn_id = f"TXN{bank._bank_id}{account_id}Withdraw{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
     transaction = Transaction(txn_id, account_id, "Withdraw", amount)
@@ -53,13 +51,10 @@ def create_account(bank, name):
 
 
 def update_account(bank, account_id, new_name):
-
     file_path = "data/bank_data.json"
+    all_data = load_json_data(file_path)
 
-    if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            all_data = json.load(file)
-
+    if all_data:
         accounts = all_data.get("accounts", [])
         for account in accounts:
             if account["account_id"] == account_id and account["bank_id"] == bank._bank_id:
@@ -75,11 +70,9 @@ def update_account(bank, account_id, new_name):
 
 def delete_account(bank, account_id):
     file_path = "data/bank_data.json"
+    all_data = load_json_data(file_path)
 
-    if os.path.exists(file_path):
-        with open(file_path, "r") as file:
-            all_data = json.load(file)
-
+    if all_data:
         accounts = all_data.get("accounts", [])
         for account in accounts:
             if account["account_id"] == account_id and account["bank_id"] == bank._bank_id:

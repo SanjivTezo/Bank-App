@@ -1,13 +1,13 @@
 {
     "bank": [
         {
-            "bank_id": "SBI20250505",
+            "bank_id": "SBI20250506",
             "bank_name": "SBI",
             "admin_user": "SBI",
             "admin_pass": "SBI"
         },
         {
-            "bank_id": "BOI20250505",
+            "bank_id": "BOI20250506",
             "bank_name": "BOI",
             "admin_user": "BOI",
             "admin_pass": "BOI"
@@ -15,7 +15,7 @@
     ],
     "charges": [
         {
-            "bank_id": "SBI20250505",
+            "bank_id": "SBI20250506",
             "bank_name": "SBI",
             "same_bank_charges": {
                 "RTGS": 0,
@@ -27,7 +27,7 @@
             }
         },
         {
-            "bank_id": "BOI20250505",
+            "bank_id": "BOI20250506",
             "bank_name": "BOI",
             "same_bank_charges": {
                 "RTGS": 0.0,
@@ -41,14 +41,14 @@
     ],
     "accepted_currencies": [
         {
-            "bank_id": "SBI20250505",
+            "bank_id": "SBI20250506",
             "bank_name": "SBI",
             "accepted_currencies": {
                 "INR": 1
             }
         },
         {
-            "bank_id": "BOI20250505",
+            "bank_id": "BOI20250506",
             "bank_name": "BOI",
             "accepted_currencies": {
                 "INR": 1,
@@ -58,92 +58,94 @@
     ],
     "accounts": [
         {
-            "account_id": "RAH20250505",
-            "bank_id": "BOI20250505",
-            "account_name": "Rahul",
-            "account_password": "Rahu#4116",
-            "account_balance": 0
-        },
-        {
-            "account_id": "ROH20250505",
-            "bank_id": "BOI20250505",
-            "account_name": "Rohan",
-            "account_password": "Rohan#1271",
-            "account_balance": 100.0
-        },
-        {
-            "account_id": "RAJ20250505",
-            "bank_id": "SBI20250505",
-            "account_name": "RAJIV",
-            "account_password": "Rajiv#8702",
-            "account_balance": 100.0
-        },
-        {
-            "account_id": "SAN20250505",
-            "bank_id": "SBI20250505",
+            "account_id": "SAN20250506",
+            "bank_id": "BOI20250506",
             "account_name": "Sanjiv",
-            "account_password": "Sanjiv@4321",
-            "account_balance": 9700.0
+            "account_password": "Sanjiv@1486",
+            "account_balance": 500.0
+        },
+        {
+            "account_id": "RAJ20250506",
+            "bank_id": "BOI20250506",
+            "account_name": "Rajiv",
+            "account_password": "Rajiv#4279",
+            "account_balance": 54000.0
+        },
+        {
+            "account_id": "RAH20250506",
+            "bank_id": "SBI20250506",
+            "account_name": "Rahu",
+            "account_password": "Rahu@6727",
+            "account_balance": 299.0
+        },
+        {
+            "account_id": "ROH20250506",
+            "bank_id": "SBI20250506",
+            "account_name": "Rohan",
+            "account_password": "Rohan#5556",
+            "account_balance": 1.0
         }
     ],
     "transactions": [
         {
-            "transaction_id": "TXNSBI20250505SAN20250505Deposit20250505163746",
-            "account_id": "SAN20250505",
+            "transaction_id": "TXNSBI20250506RAH20250506Deposit20250506123955",
+            "account_id": "RAH20250506",
             "txn_type": "Deposit",
-            "amount": 10000.0,
+            "amount": 800.0,
             "details": {
                 "currency": "INR"
             },
-            "timestamp": "2025-05-05 16:37:46"
+            "timestamp": "2025-05-06 12:39:55"
         },
         {
-            "transaction_id": "TXNSBI20250505SAN20250505Withdraw20250505163801",
-            "account_id": "SAN20250505",
-            "txn_type": "Withdraw",
-            "amount": 100.0,
-            "details": {},
-            "timestamp": "2025-05-05 16:38:01"
-        },
-        {
-            "transaction_id": "TXNSBI20250505SAN20250505Transfer20250505163824",
-            "account_id": "SAN20250505",
+            "transaction_id": "TXNSBI20250506RAH20250506Transfer20250506124031",
+            "account_id": "RAH20250506",
             "txn_type": "Transfer",
-            "amount": -100.0,
+            "amount": -1.0,
             "details": {
-                "receiver_id": "RAJ20250505"
+                "receiver_id": "ROH20250506"
             },
-            "timestamp": "2025-05-05 16:38:24"
+            "timestamp": "2025-05-06 12:40:31"
         },
         {
-            "transaction_id": "TXNSBI20250505RAJ20250505Receive20250505163824",
-            "account_id": "RAJ20250505",
+            "transaction_id": "TXNSBI20250506ROH20250506Receive20250506124031",
+            "account_id": "ROH20250506",
             "txn_type": "Receive",
-            "amount": 100.0,
+            "amount": 1.0,
             "details": {
-                "sender_id": "SAN20250505"
+                "sender_id": "RAH20250506"
             },
-            "timestamp": "2025-05-05 16:38:24"
+            "timestamp": "2025-05-06 12:40:31"
         },
         {
-            "transaction_id": "TXNSBI20250505SAN20250505Transfer20250505163852",
-            "account_id": "SAN20250505",
+            "transaction_id": "TXNSBI20250506RAH20250506Transfer20250506124119",
+            "account_id": "RAH20250506",
             "txn_type": "Transfer",
-            "amount": -100.0,
+            "amount": -500.0,
             "details": {
-                "receiver_id": "ROH20250505"
+                "receiver_id": "SAN20250506"
             },
-            "timestamp": "2025-05-05 16:38:52"
+            "timestamp": "2025-05-06 12:41:19"
         },
         {
-            "transaction_id": "TXNBOI20250505ROH20250505Receive20250505163852",
-            "account_id": "ROH20250505",
+            "transaction_id": "TXNBOI20250506SAN20250506Receive20250506124119",
+            "account_id": "SAN20250506",
             "txn_type": "Receive",
-            "amount": 100.0,
+            "amount": 500.0,
             "details": {
-                "sender_id": "SAN20250505"
+                "sender_id": "RAH20250506"
             },
-            "timestamp": "2025-05-05 16:38:52"
+            "timestamp": "2025-05-06 12:41:19"
+        },
+        {
+            "transaction_id": "TXNBOI20250506RAJ20250506Deposit20250506124216",
+            "account_id": "RAJ20250506",
+            "txn_type": "Deposit",
+            "amount": 54000.0,
+            "details": {
+                "currency": "US"
+            },
+            "timestamp": "2025-05-06 12:42:16"
         }
     ]
 }
