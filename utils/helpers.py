@@ -2,7 +2,7 @@ import json
 import os
 import datetime
 from models.bank import Bank
-from utils.getters import BankGetters
+from models.getters.BankGetters import BankGetters
 from utils.json_utils import save_to_json
 
 def load_json_data(file_path):

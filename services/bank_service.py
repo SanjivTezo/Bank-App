@@ -1,10 +1,5 @@
 import json
-import os
-from models.bank import Bank
-from models.account import Account
-from models.transaction import Transaction
-from utils.getters import AccountGetters, BankGetters, TransactionGetters
-from utils.helpers import save_bank_data, load_json_data
+from utils.helpers import  load_json_data
 
 def add_currency(bank, currency, exchange_rate):
     file_path = "data/bank_data.json"

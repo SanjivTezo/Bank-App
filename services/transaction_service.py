@@ -1,6 +1,5 @@
 from models.transaction import Transaction
-from models.bank import Bank
-from utils.helpers import save_bank_data, generate_transaction_id, validate_account, save_to_json, load_json_data
+from utils.helpers import  save_to_json, load_json_data
 import datetime
 
 def deposit(bank, account_id, amount, currency):

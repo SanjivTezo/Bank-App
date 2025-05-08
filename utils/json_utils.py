@@ -2,8 +2,6 @@ import os
 import json
 from models.account import Account
 from models.transaction import Transaction
-from utils.getters import AccountGetters, BankGetters, TransactionGetters
-
 
 def save_to_json(file_path, section, data):
     try:

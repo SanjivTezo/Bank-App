@@ -1,7 +1,7 @@
 import os
 import json
-from services.account_service import create_account, update_account, delete_account
-from services.bank_service import add_currency, set_charges, see_service_charges, display_currency_details
+from services.account_service import  update_account, delete_account
+from services.bank_service import add_currency, set_charges
 from services.transaction_service import view_all_transactions, revert_transaction
 from models.account import Account
 from utils.json_utils import save_to_json

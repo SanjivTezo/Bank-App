@@ -1,11 +1,5 @@
 from services.transaction_service import withdraw, transfer, deposit
-from services.account_service import get_account_balance
-from utils.json_utils import save_to_json
-from models.transaction import Transaction
 from utils.helpers import load_json_data
-import datetime
-import os
-import json
 
 def deposit_action(bank, account_id):
     amount = float(input("Enter amount to deposit: "))

@@ -1,6 +1,6 @@
 import datetime
 import os
-from utils.json_utils import save_to_json, load_from_json
+from utils.json_utils import  load_from_json
 
 class Bank:
     def __init__(self, name, admin_user, admin_pass):

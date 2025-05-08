@@ -1,7 +1,5 @@
-from models.bank import Bank
-import os
-import json
-from utils.getters import BankGetters, AccountGetters
+
+from models.getters.BankGetters import BankGetters
 from presentation_layer.bank_menu import create_new_bank
 from presentation_layer.staff_actions import (
     create_account_action, update_account_action, delete_account_action,
