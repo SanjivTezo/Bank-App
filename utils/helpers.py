@@ -41,13 +41,5 @@ def get_accounts(bank):
     bank_getters = BankGetters(bank)
     return bank_getters.get_accounts()
 
-def save_bank_data(bank):
-    save_to_json("data/bank_data.json", bank._name, bank.to_dict())
-
 def generate_transaction_id(bank_id, account_id, txn_type):
     return f"TXN{bank_id}{account_id}{txn_type}{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}"
-
-def validate_account(accounts, account_id):
-    if account_id not in accounts:
-        return None, "Account not found."
-    return accounts[account_id], None

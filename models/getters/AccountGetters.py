@@ -13,14 +13,12 @@ class AccountGetters:
         return self._account._balance
 
     def get_transactions_string(self):
-        # Ensure _transactions is a valid list
         if not isinstance(self._account._transactions, list):
             return ["No transactions found."]
         return [str(txn) for txn in self._account._transactions] if self._account._transactions else ["No transactions found."]
 
     
     def get_transactions(self):
-        # Return the actual Transaction objects
         return self._account._transactions if isinstance(self._account._transactions, list) else []
 
     def verify_password(self, password):

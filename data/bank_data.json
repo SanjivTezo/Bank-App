@@ -1,13 +1,13 @@
 {
     "bank": [
         {
-            "bank_id": "SBI20250508",
+            "bank_id": "SBI20250509",
             "bank_name": "SBI",
             "admin_user": "SBI",
             "admin_pass": "SBI"
         },
         {
-            "bank_id": "HDF20250508",
+            "bank_id": "HDF20250509",
             "bank_name": "HDFC",
             "admin_user": "HDFC",
             "admin_pass": "HDFC"
@@ -15,20 +15,8 @@
     ],
     "charges": [
         {
-            "bank_id": "SBI20250508",
+            "bank_id": "SBI20250509",
             "bank_name": "SBI",
-            "same_bank_charges": {
-                "RTGS": 0,
-                "IMPS": 5
-            },
-            "other_bank_charges": {
-                "RTGS": 2,
-                "IMPS": 6
-            }
-        },
-        {
-            "bank_id": "HDF20250508",
-            "bank_name": "HDFC",
             "same_bank_charges": {
                 "RTGS": 0.0,
                 "IMPS": 5.0
@@ -37,136 +25,126 @@
                 "RTGS": 2.0,
                 "IMPS": 6.0
             }
+        },
+        {
+            "bank_id": "HDF20250509",
+            "bank_name": "HDFC",
+            "same_bank_charges": {
+                "RTGS": 0,
+                "IMPS": 5
+            },
+            "other_bank_charges": {
+                "RTGS": 2,
+                "IMPS": 6
+            }
         }
     ],
     "accepted_currencies": [
         {
-            "bank_id": "SBI20250508",
+            "bank_id": "SBI20250509",
             "bank_name": "SBI",
             "accepted_currencies": {
-                "INR": 1
+                "INR": 1,
+                "Us": 90.0
             }
         },
         {
-            "bank_id": "HDF20250508",
+            "bank_id": "HDF20250509",
             "bank_name": "HDFC",
             "accepted_currencies": {
-                "INR": 1,
-                "US": 90.0
+                "INR": 1
             }
         }
     ],
     "accounts": [
         {
-            "account_id": "SAN20250508",
-            "bank_id": "HDF20250508",
-            "account_name": "Sanjiv",
-            "account_password": "Sanjiv@7694",
-            "account_balance": 8990.0
+            "account_id": "SAN20250509",
+            "bank_id": "SBI20250509",
+            "account_name": "Sanju",
+            "account_password": "Sanjiv@6331",
+            "account_balance": 10000.0
         },
         {
-            "account_id": "RAM20250508",
-            "bank_id": "SBI20250508",
-            "account_name": "ram",
-            "account_password": "Ram#2665",
-            "account_balance": 99090.0
+            "account_id": "RAJ20250509",
+            "bank_id": "SBI20250509",
+            "account_name": "Rajiv",
+            "account_password": "Rajiv#1245",
+            "account_balance": 9000.0
         },
         {
-            "account_id": "SHA20250508",
-            "bank_id": "SBI20250508",
-            "account_name": "lakhan",
-            "account_password": "Sham#7103",
-            "account_balance": 910.0
+            "account_id": "RAH20250509",
+            "bank_id": "HDF20250509",
+            "account_name": "Rahulkumar",
+            "account_password": "Rahul$6058",
+            "account_balance": 9800.0
         }
     ],
     "transactions": [
         {
-            "transaction_id": "TXNHDF20250508SAN20250508Deposit20250508124549",
-            "account_id": "SAN20250508",
+            "transaction_id": "TXNHDF20250509RAH20250509Deposit20250509141950",
+            "account_id": "RAH20250509",
             "txn_type": "Deposit",
-            "amount": 9000.0,
-            "details": {
-                "currency": "US"
-            },
-            "timestamp": "2025-05-08 12:45:49"
-        },
-        {
-            "transaction_id": "TXNHDF20250508SAN20250508Deposit20250508124558",
-            "account_id": "SAN20250508",
-            "txn_type": "Deposit",
-            "amount": 90.0,
+            "amount": 10000.0,
             "details": {
                 "currency": "INR"
             },
-            "timestamp": "2025-05-08 12:45:58"
+            "timestamp": "2025-05-09 14:19:50"
         },
         {
-            "transaction_id": "TXNHDF20250508SAN20250508Withdraw20250508124606",
-            "account_id": "SAN20250508",
+            "transaction_id": "TXNHDF20250509RAH20250509Withdraw20250509141957",
+            "account_id": "RAH20250509",
             "txn_type": "Withdraw",
             "amount": 100.0,
             "details": {},
-            "timestamp": "2025-05-08 12:46:06"
+            "timestamp": "2025-05-09 14:19:57"
         },
         {
-            "transaction_id": "TXNSBI20250508RAM20250508Deposit20250508124848",
-            "account_id": "RAM20250508",
+            "transaction_id": "TXNHDF20250509RAH20250509Withdraw20250509142008",
+            "account_id": "RAH20250509",
+            "txn_type": "Withdraw",
+            "amount": 100.0,
+            "details": {},
+            "timestamp": "2025-05-09 14:20:08"
+        },
+        {
+            "transaction_id": "TXNHDF20250509RAH20250509Transfer20250509142037",
+            "account_id": "RAH20250509",
+            "txn_type": "Transfer",
+            "amount": -100.0,
+            "details": {
+                "receiver_id": "RAJ20250509"
+            },
+            "timestamp": "2025-05-09 14:20:37"
+        },
+        {
+            "transaction_id": "TXNSBI20250509RAJ20250509Deposit20250509142612",
+            "account_id": "RAJ20250509",
             "txn_type": "Deposit",
-            "amount": 100000.0,
+            "amount": 9000.0,
+            "details": {
+                "currency": "Us"
+            },
+            "timestamp": "2025-05-09 14:26:12"
+        },
+        {
+            "transaction_id": "TXNSBI20250509SAN20250509Receive20250509142804",
+            "account_id": "SAN20250509",
+            "txn_type": "Receive",
+            "amount": 1000.0,
+            "details": {
+                "sender_id": "RAJ20250509"
+            },
+            "timestamp": "2025-05-09 14:28:04"
+        },
+        {
+            "transaction_id": "TXNSBI20250509SAN20250509Deposit20250509143628",
+            "account_id": "SAN20250509",
+            "txn_type": "Deposit",
+            "amount": 10000.0,
             "details": {
                 "currency": "INR"
             },
-            "timestamp": "2025-05-08 12:48:48"
-        },
-        {
-            "transaction_id": "TXNSBI20250508RAM20250508Transfer20250508124934",
-            "account_id": "RAM20250508",
-            "txn_type": "Transfer",
-            "amount": -910.0,
-            "details": {
-                "receiver_id": "RAM20250508"
-            },
-            "timestamp": "2025-05-08 12:49:34"
-        },
-        {
-            "transaction_id": "TXNSBI20250508RAM20250508Receive20250508124934",
-            "account_id": "RAM20250508",
-            "txn_type": "Receive",
-            "amount": 910.0,
-            "details": {
-                "sender_id": "RAM20250508"
-            },
-            "timestamp": "2025-05-08 12:49:34"
-        },
-        {
-            "transaction_id": "TXNSBI20250508RAM20250508Transfer20250508125105",
-            "account_id": "RAM20250508",
-            "txn_type": "Transfer",
-            "amount": -910.0,
-            "details": {
-                "receiver_id": "SHA20250508"
-            },
-            "timestamp": "2025-05-08 12:51:05"
-        },
-        {
-            "transaction_id": "TXNSBI20250508SHA20250508Receive20250508125105",
-            "account_id": "SHA20250508",
-            "txn_type": "Receive",
-            "amount": 910.0,
-            "details": {
-                "sender_id": "RAM20250508"
-            },
-            "timestamp": "2025-05-08 12:51:05"
-        },
-        {
-            "transaction_id": "TXNHDF20250508SAN20250508Receive20250508125302",
-            "account_id": "SAN20250508",
-            "txn_type": "Receive",
-            "amount": 10.0,
-            "details": {
-                "sender_id": "SHA20250508"
-            },
-            "timestamp": "2025-05-08 12:53:02"
+            "timestamp": "2025-05-09 14:36:28"
         }
     ]
 }

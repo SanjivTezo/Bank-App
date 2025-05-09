@@ -1,5 +1,6 @@
 from services.transaction_service import withdraw, transfer, deposit
 from utils.helpers import load_json_data
+from models.getters.BankGetters import BankGetters  # Import BankGetters
 
 def deposit_action(bank, account_id):
     amount = float(input("Enter amount to deposit: "))
@@ -20,7 +21,9 @@ def transfer_action(bank, account_id):
     print(result)
 
 def check_balance_action(bank, account_id):
-    account = bank._accounts.get(account_id)
+    bank_getters = BankGetters(bank)  
+    accounts = bank_getters.get_accounts()  
+    account = accounts.get(account_id)
     if account:
         print(f"Account Balance: {account['account_balance']}")
     else:
